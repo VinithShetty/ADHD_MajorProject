@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADHD Prediction</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; }
+.question, .medical { margin-bottom: 10px; }
+label { display: block; margin-bottom: 5px; }
+select { width: 60px; }
+#result { margin-top: 20px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h2>EEG + Questionnaire ADHD Prediction</h2>
+
+<!-- EEG Upload -->
+<div>
+  <label for="eegFile">Upload EEG CSV (19 channels):</label>
+  <input type="file" id="eegFile" accept=".csv">
+</div>
+
+<!-- Questions -->
+<h3>Answer the 20 questions (1-5)</h3>
+<div id="questionsContainer"></div>
+
+<!-- Medical History -->
+<h3>Medical History (Yes/No)</h3>
+<div id="medicalContainer">
+  <div class="medical"><label><input type="checkbox" id="family_adhd"> Family history of ADHD</label></div>
+  <div class="medical"><label><input type="checkbox" id="family_learning_disorders"> Family history of learning disorders</label></div>
+  <div class="medical"><label><input type="checkbox" id="sleep_problems"> History of sleep problems</label></div>
+  <div class="medical"><label><input type="checkbox" id="anxiety_depression"> History of anxiety/depression</label></div>
+  <div class="medical"><label><input type="checkbox" id="head_injury"> History of head injury</label></div>
+  <div class="medical"><label><input type="checkbox" id="current_medications"> Current medications</label></div>
+  <div class="medical"><label><input type="checkbox" id="developmental_delays"> Developmental delays in childhood</label></div>
+</div>
+
+<!-- Submit -->
+<button id="submitBtn">Get Prediction</button>
+
+<!-- Result -->
+<div id="result"></div>
+
+<script>
+const eegChannels = ['Fp1','Fp2','F3','F4','C3','C4','P3','P4','O1','O2','F7','F8','T7','T8','P7','P8','Fz','Cz','Pz'];
+const questions = [
+  "I often find it difficult to focus on details and make careless mistakes.",
+  "I struggle to stay focused during tasks or activities.",
+  "I have difficulty organizing tasks or activities.",
+  "I avoid tasks that require sustained mental effort.",
+  "I am easily distracted by outside stimuli.",
+  "I often fidget with hands/feet or squirm in my seat.",
+  "I feel restless and find it hard to stay seated.",
+  "I talk excessively or interrupt others frequently.",
+  "I act impulsively without thinking about the consequences.",
+  "I have difficulty waiting for my turn in conversations or activities.",
+  "I often argue with parents, teachers, or authority figures.",
+  "I deliberately annoy or provoke others.",
+  "I often lose my temper and become easily irritated.",
+  "I have trouble reading unfamiliar words or longer passages.",
+  "I often struggle with spelling or writing correctly.",
+  "I read slowly or have difficulty understanding written text.",
+  "I find it hard to make or maintain friendships.",
+  "I struggle to understand body language or facial expressions.",
+  "I prefer routines and get upset when they change.",
+  "I engage in repetitive behaviors (e.g., hand flapping, repeating words)."
+];
+
+// Generate question dropdowns
+const container = document.getElementById('questionsContainer');
+questions.forEach((q, i) => {
+  const div = document.createElement('div');
+  div.className = 'question';
+  div.innerHTML = `<label>Q${i+1}: ${q}</label>
+                   <select id="q${i+1}">
+                     <option value="1">1</option>
+                     <option value="2">2</option>
+                     <option value="3" selected>3</option>
+                     <option value="4">4</option>
+                     <option value="5">5</option>
+                   </select>`;
+  container.appendChild(div);
+});
+
+// Parse EEG CSV file
+function parseCSV(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const text = e.target.result;
+      const rows = text.trim().split('\n').map(r => r.split(','));
+      const header = rows[0];
+      const dataRow = rows[1];
+      const eegData = {};
+      eegChannels.forEach(ch => {
+        const idx = header.indexOf(ch);
+        eegData[ch] = parseFloat(dataRow[idx] || 0);
+      });
+      resolve(eegData);
+    };
+    reader.onerror = reject;
+    reader.readAsText(file);
+  });
+}
+
+// Submit handler
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const file = document.getElementById('eegFile').files[0];
+  if (!file) { alert("Please upload an EEG CSV file!"); return; }
+  
+  const eegData = await parseCSV(file);
+  
+  // Collect question answers
+  const qAnswers = [];
+  for (let i = 1; i <= 20; i++) {
+    qAnswers.push(parseInt(document.getElementById(`q${i}`).value));
+  }
+  
+  // Collect medical history
+  const medicalHistory = {
+    family_adhd: document.getElementById('family_adhd').checked ? 'Yes' : 'No',
+    family_learning_disorders: document.getElementById('family_learning_disorders').checked ? 'Yes' : 'No',
+    sleep_problems: document.getElementById('sleep_problems').checked ? 'Yes' : 'No',
+    anxiety_depression: document.getElementById('anxiety_depression').checked ? 'Yes' : 'No',
+    head_injury: document.getElementById('head_injury').checked ? 'Yes' : 'No',
+    current_medications: document.getElementById('current_medications').checked ? 'Yes' : 'No',
+    developmental_delays: document.getElementById('developmental_delays').checked ? 'Yes' : 'No'
+  };
+  
+  // ✅ Build JSON payload correctly
+  const payload = {
+    eeg: eegData,
+    questions: qAnswers,  // send all 20 at once
+    medical_history: medicalHistory
+  };
+  
+  // Send to Flask API
+  fetch('http://127.0.0.1:5000/predict', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      document.getElementById('result').innerHTML = `<span style="color:red">Error: ${data.error}</span>`;
+    } else {
+      let html = `Prediction: ${data.prediction}<br>`;
+      document.getElementById('result').innerHTML = html;
+    }
+  })
+  .catch(err => { console.error(err); alert("Error connecting to API."); });
+});
+</script>
+
+</body>
+</html>
