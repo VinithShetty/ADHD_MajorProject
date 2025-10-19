@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EEG ADHD Prediction</title>
+</head>
+<body>
+<h2>EEG ADHD Prediction</h2>
+
+<label>Upload EEG CSV (19 channels):</label>
+<input type="file" id="eegFile" accept=".csv">
+<button id="submitBtn">Get Prediction</button>
+
+<div id="result"></div>
+
+<script>
+const eegChannels = ['Fp1','Fp2','F3','F4','C3','C4','P3','P4','O1','O2',
+                     'F7','F8','T7','T8','P7','P8','Fz','Cz','Pz'];
+
+// Parse CSV
+function parseCSV(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const text = e.target.result;
+            const rows = text.trim().split('\n').map(r => r.split(','));
+            const header = rows[0];
+            const dataRow = rows[1];
+            const eegData = {};
+            eegChannels.forEach(ch => {
+                const idx = header.indexOf(ch);
+                eegData[ch] = parseFloat(dataRow[idx] || 0);
+            });
+            resolve(eegData);
+        };
+        reader.onerror = reject;
+        reader.readAsText(file);
+    });
+}
+
+// Submit handler
+document.getElementById('submitBtn').addEventListener('click', async () => {
+    const file = document.getElementById('eegFile').files[0];
+    if (!file) { alert("Please upload an EEG CSV file!"); return; }
+
+    const eegData = await parseCSV(file);
+
+    fetch('http://127.0.0.1:5000/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eeg: eegData })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            document.getElementById('result').innerHTML = `<span style="color:red">${data.error}</span>`;
+        } else {
+            document.getElementById('result').innerHTML = `EEG Prediction: <b>${data.prediction}</b>`;
+        }
+    })
+    .catch(err => { console.error(err); alert("Error connecting to API."); });
+});
+</script>
+</body>
+</html>
