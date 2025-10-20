@@ -2,6 +2,10 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
 import joblib
+import warnings
+
+# Suppress scikit-learn version warnings
+warnings.filterwarnings('ignore', category=UserWarning)
 
 app = Flask(__name__)
 CORS(app)  # <--- Enable CORS for all routes

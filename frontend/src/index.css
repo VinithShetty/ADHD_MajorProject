@@ -1,0 +1,45 @@
+/* stylelint-disable at-rule-no-unknown */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-medical-clinical text-medical-dark-slate antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-medical-navy text-white px-6 py-3 rounded-lg font-medium 
+           hover:bg-medical-blue transition-all duration-200 
+           shadow-clinical hover:shadow-clinical-hover 
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-medical-navy px-6 py-3 rounded-lg font-medium 
+           border-2 border-medical-navy hover:bg-medical-clinical 
+           transition-all duration-200 shadow-clinical;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-clinical p-6 border border-gray-200;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg 
+           focus:outline-none focus:ring-2 focus:ring-medical-blue 
+           focus:border-transparent transition-all;
+  }
+  
+  .label-text {
+    @apply block text-sm font-medium text-medical-dark-slate mb-2;
+  }
+  
+  .error-text {
+    @apply text-red-600 text-sm mt-1;
+  }
+}
+
+/* stylelint-enable at-rule-no-unknown */
