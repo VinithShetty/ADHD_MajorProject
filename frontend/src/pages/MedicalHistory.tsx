@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { Clipboard, ChevronRight, ChevronLeft, Info, AlertCircle } from 'lucide-react'
+import { Clipboard, ChevronRight, ChevronLeft, AlertCircle } from 'lucide-react'
 import { useAssessment } from '../context/AssessmentContext'
 
 interface MedicalHistoryFormData {
@@ -41,14 +41,6 @@ const MedicalHistory: React.FC = () => {
 
   const diagnosisOptions = [
     'ADHD',
-    'Anxiety Disorder',
-    'Depression',
-    'Bipolar Disorder',
-    'OCD',
-    'PTSD',
-    'Learning Disability',
-    'Autism Spectrum Disorder',
-    'Other',
   ]
 
   const toggleDiagnosis = (diagnosis: string) => {
