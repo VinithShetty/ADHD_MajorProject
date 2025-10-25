@@ -65,68 +65,125 @@ const questions = [
     text: 'Do you struggle to wait for your turn in activities?',
     tooltip: 'Impatience in queues, during conversations, or in turn-taking situations.',
   },
-  // ODD-related (Q11-Q13)
   {
     id: 11,
-    category: 'Behavioral Patterns',
-    text: 'Do you often lose your temper or become easily annoyed?',
-    tooltip: 'Frequent anger outbursts or low frustration tolerance.',
+    category: 'Organization',
+    text: 'Do you often have difficulty organizing tasks or activities?',
+    tooltip: 'Challenges with planning, sequencing, and organizing work or personal tasks.',
   },
   {
     id: 12,
-    category: 'Behavioral Patterns',
-    text: 'Do you often argue with authority figures or refuse to comply with rules?',
-    tooltip: 'Oppositional behavior towards parents, teachers, or supervisors.',
+    category: 'Impulsivity',
+    text: 'Do you frequently start tasks without reading instructions?',
+    tooltip: 'Acting impulsively without proper preparation or understanding requirements.',
   },
   {
     id: 13,
-    category: 'Behavioral Patterns',
-    text: 'Do you often deliberately annoy others or blame others for mistakes?',
-    tooltip: 'Pattern of antagonistic or defensive behavior.',
+    category: 'Attention & Focus',
+    text: 'Do you lose focus during conversations?',
+    tooltip: 'Mind wandering or difficulty maintaining attention during verbal exchanges.',
   },
-  // Dyslexia-related (Q14-Q16)
   {
     id: 14,
-    category: 'Learning & Academic',
-    text: 'Do you have significant difficulty with reading or spelling?',
-    tooltip: 'Persistent challenges with word recognition, decoding, or spelling despite adequate instruction.',
+    category: 'Memory & Organization',
+    text: 'Do you forget daily activities or appointments?',
+    tooltip: 'Frequent forgetfulness affecting daily responsibilities and commitments.',
   },
   {
     id: 15,
-    category: 'Learning & Academic',
-    text: 'Do you confuse similar-looking letters or words (e.g., b/d, was/saw)?',
-    tooltip: 'Letter reversals or word confusion beyond developmental expectations.',
+    category: 'Attention & Focus',
+    text: 'Do you often feel mentally overactive or distracted?',
+    tooltip: 'Racing thoughts or constant mental activity that interferes with focus.',
   },
   {
     id: 16,
-    category: 'Learning & Academic',
-    text: 'Do you read much slower than peers or avoid reading aloud?',
-    tooltip: 'Reading fluency significantly below age or grade level.',
+    category: 'Hyperactivity',
+    text: 'Do you have trouble relaxing quietly?',
+    tooltip: 'Difficulty engaging in quiet leisure activities or feeling uncomfortable being still.',
   },
-  // ASD-related (Q17-Q20)
   {
     id: 17,
-    category: 'Social Interaction',
-    text: 'Do you find social interactions confusing or exhausting?',
-    tooltip: 'Difficulty understanding social cues, maintaining reciprocal conversation.',
+    category: 'Impulsivity',
+    text: 'Do you act before thinking about consequences?',
+    tooltip: 'Impulsive decision-making without considering potential outcomes or risks.',
   },
   {
     id: 18,
-    category: 'Social Interaction',
-    text: 'Do you prefer strict routines and become upset when they change?',
-    tooltip: 'Rigid adherence to routines, distress with unexpected changes.',
+    category: 'Attention & Focus',
+    text: 'Do you find it hard to listen when others are talking?',
+    tooltip: 'Difficulty maintaining attention during conversations or appearing not to listen.',
   },
   {
     id: 19,
-    category: 'Social Interaction',
-    text: 'Do you have intense, focused interests in specific topics?',
-    tooltip: 'Highly restricted, fixated interests with abnormal intensity or focus.',
+    category: 'Task Completion',
+    text: 'Do you have difficulty finishing tasks?',
+    tooltip: 'Starting multiple tasks but struggling to complete them to conclusion.',
   },
   {
     id: 20,
-    category: 'Sensory',
-    text: 'Are you overly sensitive to sensory input (sounds, textures, lights)?',
-    tooltip: 'Heightened or reduced sensitivity to sensory stimuli.',
+    category: 'Task Completion',
+    text: 'Do you struggle to follow through on instructions?',
+    tooltip: 'Difficulty completing multi-step instructions or following through on commitments.',
+  },
+  {
+    id: 21,
+    category: 'Organization',
+    text: 'Do you often misplace school/work materials?',
+    tooltip: 'Frequently losing or misplacing important work-related items or documents.',
+  },
+  {
+    id: 22,
+    category: 'Impulsivity',
+    text: 'Do you find yourself blurting out answers before questions are completed?',
+    tooltip: 'Difficulty waiting to respond, interrupting others with premature answers.',
+  },
+  {
+    id: 23,
+    category: 'Attention & Focus',
+    text: 'Do you have difficulty maintaining focus on boring tasks?',
+    tooltip: 'Particular struggle with sustaining attention on repetitive or uninteresting activities.',
+  },
+  {
+    id: 24,
+    category: 'Impulsivity',
+    text: 'Do you often make impulsive decisions?',
+    tooltip: 'Making quick decisions without adequate thought or consideration of alternatives.',
+  },
+  {
+    id: 25,
+    category: 'Time Management',
+    text: 'Do you struggle to manage time effectively?',
+    tooltip: 'Difficulty estimating time, meeting deadlines, or managing schedule efficiently.',
+  },
+  {
+    id: 26,
+    category: 'Emotional Regulation',
+    text: 'Do you feel emotionally impulsive or frustrated easily?',
+    tooltip: 'Quick emotional reactions, low frustration tolerance, or difficulty controlling emotions.',
+  },
+  {
+    id: 27,
+    category: 'Task Completion',
+    text: 'Do you often switch between tasks without completing them?',
+    tooltip: 'Tendency to jump from one activity to another without finishing the first.',
+  },
+  {
+    id: 28,
+    category: 'Time Management',
+    text: 'Do you procrastinate frequently?',
+    tooltip: 'Chronic delay of tasks, especially those requiring sustained effort or planning.',
+  },
+  {
+    id: 29,
+    category: 'Organization',
+    text: 'Do you have difficulty prioritizing tasks?',
+    tooltip: 'Challenges determining which tasks are most important or urgent.',
+  },
+  {
+    id: 30,
+    category: 'Attention & Focus',
+    text: 'Do you feel that your mind frequently wanders?',
+    tooltip: 'Difficulty maintaining mental focus, with thoughts drifting to unrelated topics.',
   },
 ]
 
@@ -261,7 +318,7 @@ const Questionnaire: React.FC = () => {
             exit={{ opacity: 0, x: -20 }}
             className="space-y-6"
           >
-            {currentQuestions.map((question, index) => (
+            {currentQuestions.map((question) => (
               <div
                 key={question.id}
                 className="p-6 border-2 border-gray-200 rounded-lg hover:border-medical-light-blue transition-colors"
