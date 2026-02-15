@@ -9,7 +9,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation()
-  const showProgress = location.pathname !== '/' && location.pathname !== '/results'
+  const showProgress = location.pathname !== '/' && location.pathname !== '/results' && location.pathname !== '/patient-records'
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-medical-clinical via-blue-50 to-medical-clinical">

@@ -68,11 +68,51 @@ export interface PredictionRequest {
   eeg: EEGData
   questions: number[]
   medical_history?: MedicalHistory
+  user_info?: {
+    patientId: string
+    age: string
+    gender: string
+    education: string
+    occupation: string
+    referringPhysician: string
+  }
 }
 
 export interface PredictionResponse {
   prediction: string
+  risk_level?: string
+  confidence?: number
+  confidence_scores?: Record<string, number>
+  saved_to_database?: boolean
   error?: string
+}
+
+export interface AssessmentRecord {
+  id: string
+  patient_id: string
+  age: string
+  gender: string
+  education: string
+  occupation: string
+  referring_physician: string
+  medical_history: any
+  questionnaire_responses: number[]
+  eeg_data: EEGData
+  prediction: string
+  risk_level: string
+  assessment_date: string
+  created_at: string
+}
+
+export interface AssessmentsListResponse {
+  assessments: AssessmentRecord[]
+  count: number
+}
+
+export interface AssessmentStatsResponse {
+  total_assessments: number
+  predictions_breakdown: Record<string, number>
+  risk_levels_breakdown: Record<string, number>
 }
 
 export const submitAssessment = async (
@@ -83,6 +123,37 @@ export const submitAssessment = async (
     return response.data
   } catch (error: any) {
     throw new Error(error.response?.data?.error || 'Failed to process assessment')
+  }
+}
+
+export const getAssessments = async (): Promise<AssessmentsListResponse> => {
+  try {
+    const response = await apiClient.get<AssessmentsListResponse>('/assessments')
+    return response.data
+  } catch (error: any) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch assessments')
+  }
+}
+
+export const getPatientAssessments = async (
+  patientId: string
+): Promise<AssessmentsListResponse> => {
+  try {
+    const response = await apiClient.get<AssessmentsListResponse>(
+      `/assessments/${patientId}`
+    )
+    return response.data
+  } catch (error: any) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch patient assessments')
+  }
+}
+
+export const getAssessmentStats = async (): Promise<AssessmentStatsResponse> => {
+  try {
+    const response = await apiClient.get<AssessmentStatsResponse>('/assessments/stats')
+    return response.data
+  } catch (error: any) {
+    throw new Error(error.response?.data?.error || 'Failed to fetch assessment stats')
   }
 }
 

@@ -6,6 +6,7 @@ import MedicalHistory from './pages/MedicalHistory'
 import Questionnaire from './pages/Questionnaire'
 import EEGUpload from './pages/EEGUpload'
 import ResultsDashboard from './pages/ResultsDashboard'
+import PatientRecords from './pages/PatientRecords'
 import Layout from './components/Layout'
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="/questionnaire" element={<Questionnaire />} />
             <Route path="/eeg-upload" element={<EEGUpload />} />
             <Route path="/results" element={<ResultsDashboard />} />
+            <Route path="/patient-records" element={<PatientRecords />} />
           </Routes>
         </Layout>
       </AssessmentProvider>

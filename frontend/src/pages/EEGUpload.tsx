@@ -16,7 +16,7 @@ import { submitAssessment, EEGData } from '../services/api'
 
 const EEGUpload: React.FC = () => {
   const navigate = useNavigate()
-  const { medicalHistory, questionnaireData, setEegData } = useAssessment()
+  const { userInfo, medicalHistory, questionnaireData, setEegData } = useAssessment()
   const [file, setFile] = useState<File | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'success' | 'error'>('idle')
@@ -111,15 +111,23 @@ const EEGUpload: React.FC = () => {
       setEegData(eegData)
 
       // Prepare questionnaire answers array
-      const questionAnswers = Array.from({ length: 20 }, (_, i) =>
+      const questionAnswers = Array.from({ length: 30 }, (_, i) =>
         questionnaireData[i + 1] || 3
       )
 
-      // Submit to backend
+      // Submit to backend (includes user_info for database storage)
       const result = await submitAssessment({
         eeg: eegData,
         questions: questionAnswers,
         medical_history: medicalHistory as any,
+        user_info: {
+          patientId: userInfo.patientId,
+          age: userInfo.age,
+          gender: userInfo.gender,
+          education: userInfo.education,
+          occupation: userInfo.occupation,
+          referringPhysician: userInfo.referringPhysician,
+        },
       })
 
       // Store result and navigate

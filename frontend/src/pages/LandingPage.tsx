@@ -87,9 +87,10 @@ const LandingPage: React.FC = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/patient-records')}
             className="btn-secondary text-lg"
           >
-            View Documentation
+            View Patient Records
           </motion.button>
         </div>
       </motion.section>
