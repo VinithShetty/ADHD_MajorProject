@@ -229,42 +229,70 @@ major-project-final/
 
 ---
 
-## 🔧 Backend Integration
+## 🏗️ Proposed System Architecture
 
-### Expected Backend Structure
+The system is built as a three-layer architecture, separating concerns across Frontend, Backend, and Machine Learning.
 
-**Your backend should have this endpoint:**
+---
 
-```python
-@app.route('/predict', methods=['POST'])
-def predict():
-    data = request.get_json()
-    
-    # data will contain:
-    # {
-    #   "eeg": {...19 channels...},
-    #   "questions": [1-5, 1-5, ...20 values],
-    #   "medical_history": {...}
-    # }
-    
-    # Return:
-    # {
-    #   "prediction": "ADHD" | "ODD" | "ASD" | "Dyslexia" | "Healthy"
-    # }
+### Layer 1: Frontend (React + TypeScript)
+
+| Feature | Detail |
+|---|---|
+| 6-page assessment workflow | Landing → User Info → Medical History → Questionnaire → EEG Upload → Results |
+| Real-time validation | Inline form errors before submission |
+| Responsive medical-grade UI | Tailwind CSS, Framer Motion animations, clinical colour palette |
+| State management via Context API | `AssessmentContext` + `AuthContext` propagate data across all pages |
+
+---
+
+### Layer 2: Backend (Flask API)
+
+| Feature | Detail |
+|---|---|
+| RESTful `/predict` endpoint | Accepts EEG + questionnaire + medical history as JSON |
+| Data validation & preprocessing | StandardScaler normalization applied before inference |
+| Model loading & inference orchestration | `joblib` loads trained `.pkl` files; returns prediction + confidence scores |
+| CORS-enabled secure communication | `flask-cors` allows cross-origin requests from the React frontend |
+
+---
+
+### Machine Learning (scikit-learn)
+
+| Feature | Detail |
+|---|---|
+| Random Forest classifier | Ensemble of decision trees trained on 19-channel EEG data |
+| StandardScaler normalization | Zero-mean, unit-variance scaling for all EEG channel features |
+| Multi-modal feature integration | Combines EEG signals with questionnaire scores for holistic analysis |
+| 5-class prediction output | ADHD · ODD · ASD · Dyslexia · Healthy (Non-ADHD) |
+
+---
+
+### Architecture Diagram
+
 ```
-
-### Current Backend Files
-
-Based on your backend structure, you have:
-- ✅ `app.py` - Flask server with `/predict` endpoint
-- ✅ `main.py` - Alternative implementation
-- ✅ Trained models in `models/` directory
-
-**Make sure your backend:**
-1. Has CORS enabled (for frontend communication)
-2. Runs on port 5000
-3. Accepts the correct data format
-4. Returns prediction results
+┌─────────────────────────────────────────────────────────┐
+│              Layer 1: Frontend (React + TS)              │
+│  Landing → UserInfo → MedicalHistory → Questionnaire     │
+│              → EEGUpload → ResultsDashboard              │
+│         [Supabase Auth]   [AssessmentContext]            │
+└────────────────────┬────────────────────────────────────┘
+                     │  HTTP POST /predict (JSON)
+                     ▼
+┌─────────────────────────────────────────────────────────┐
+│              Layer 2: Backend (Flask API)                │
+│  CORS · Data Validation · StandardScaler · joblib        │
+│  /predict  /save_assessment  /get_assessments            │
+└────────────────────┬────────────────────────────────────┘
+          ┌──────────┴───────────┐
+          ▼                      ▼
+┌──────────────────┐   ┌─────────────────────────────────┐
+│  ML Model Layer  │   │          Supabase DB             │
+│  Random Forest   │   │  patient_assessments table       │
+│  eeg_model.pkl   │   │  PostgreSQL (cloud-hosted)       │
+│  eeg_scaler.pkl  │   └─────────────────────────────────┘
+└──────────────────┘
+```
 
 ---
 
